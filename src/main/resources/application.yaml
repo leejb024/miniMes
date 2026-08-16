@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    url: jdbc:postgresql://localhost:5434/sdmes
+    username: mesuser
+    password: mesuser
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        jdbc:
+          time_zone: Asia/Seoul
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: miniMes-dev-jwt-secret-key-change-in-production-2026
+    expiration-ms: 86400000
+  cors:
+    allowed-origins: http://localhost:5173
+
+# 로그인 테이블: TB_USER
+# 초기 계정: admin / admin123

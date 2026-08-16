@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    url: jdbc:h2:mem:minimes;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+
+app:
+  jwt:
+    secret: miniMes-test-jwt-secret-key-change-in-production
+    expiration-ms: 3600000
+  cors:
+    allowed-origins: http://localhost:5173
