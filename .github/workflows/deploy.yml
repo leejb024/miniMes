@@ -20,9 +20,9 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         timeout: 10m  # 타임아웃을 10분으로 연장
         script: |
-          cd /home/ec2-user/workspace  # EC2에 프로젝트가 있는 경로
-          cd miniMes
-          git pull origin main
+          cd /home/ec2-user/workspace/miniMes  # EC2에 프로젝트가 있는 경로
+          git fetch origin main
+          git reset --hard origin/main
           
           # --- 1. 프론트엔드(Node.js) 빌드 및 실행 ---
           cd frontend
@@ -37,7 +37,9 @@ jobs:
           cd /home/ec2-user/workspace/miniMes
 
           # 기존에 돌고 있던 Java(Spring Boot) 프로세스 종료
-          #sudo pkill -f 'java -jar' || true
+          sudo fuser -k 8080/tcp || true
+          sudo pkill -f 'java -jar' || true
+
 
           # --- 2. 백엔드(Spring Boot) 빌드 및 실행 ---
           echo "=== Backend Deploy Start ==="
