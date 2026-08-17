@@ -29,11 +29,16 @@ jobs:
           npm install
           npm run build
  
+          # 빌드된 파일들을 스프링 부트의 static 폴더로 이동
+          mkdir -p ../src/main/resources/static
+          cp -r dist/* ../src/main/resources/static/
+          cd ..
+
           # 백엔드 작업 하기 위해 다시 루트 폴더로 이동
           cd /home/ec2-user/workspace/miniMes
 
           # 기존에 돌고 있던 Java(Spring Boot) 프로세스 종료
-          #pkill -f 'java -jar' || true
+          sudo pkill -f 'java -jar' || true
 
           # --- 2. 백엔드(Spring Boot) 빌드 및 실행 ---
           echo "=== Backend Deploy Start ==="
