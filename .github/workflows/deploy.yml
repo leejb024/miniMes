@@ -30,7 +30,6 @@ jobs:
           npm run build
  
           # 빌드된 파일들을 스프링 부트의 static 폴더로 이동
-          mkdir -p ../src/main/resources/static
           cp -r dist/* ../src/main/resources/static/
           cd ..
 
