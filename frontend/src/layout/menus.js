@@ -7,10 +7,8 @@ export const menus = [
         id: 'master-common',
         title: '공통',
         children: [
-          { path: '/master/common/factory', title: '공장관리' },
           { path: '/master/common/partner', title: '거래처관리' },
-          { path: '/master/common/warehouse', title: '창고/위치 관리' },
-          { path: '/master/common/department', title: '부서 관리' }
+          { path: '/master/common/warehouse', title: '창고/위치 관리' }
         ]
       },
       {
@@ -25,7 +23,6 @@ export const menus = [
         title: '공정',
         children: [
           { path: '/master/process/process', title: '공정관리' },
-          { path: '/master/process/workcenter', title: '워크센터 관리' },
           { path: '/master/process/bom', title: 'BOM 관리' }
         ]
       }
