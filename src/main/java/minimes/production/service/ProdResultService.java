@@ -1,13 +1,13 @@
-package minimes.service;
+package minimes.production.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import minimes.dto.ProdResultDetailResponse;
-import minimes.dto.ProdResultResponse;
-import minimes.repository.ProdResultRepository;
+import minimes.production.dto.ProdResultDetailResponse;
+import minimes.production.dto.ProdResultResponse;
+import minimes.production.repository.ProdResultRepository;
 
 import lombok.RequiredArgsConstructor;
 

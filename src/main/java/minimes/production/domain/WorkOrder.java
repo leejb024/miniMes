@@ -1,4 +1,4 @@
-package minimes.domain;
+package minimes.production.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

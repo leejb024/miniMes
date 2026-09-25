@@ -1,4 +1,4 @@
-package minimes.controller;
+package minimes.production.controller;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import minimes.dto.ProdResultDetailResponse;
-import minimes.dto.ProdResultResponse;
-import minimes.service.ProdResultService;
+import minimes.production.dto.ProdResultDetailResponse;
+import minimes.production.dto.ProdResultResponse;
+import minimes.production.service.ProdResultService;
 
 import lombok.RequiredArgsConstructor;
 

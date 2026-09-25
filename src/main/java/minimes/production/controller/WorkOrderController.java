@@ -1,4 +1,4 @@
-package minimes.controller;
+package minimes.production.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import minimes.dto.WorkOrderResponse;
-import minimes.service.WorkOrderService;
+import minimes.production.dto.WorkOrderResponse;
+import minimes.production.service.WorkOrderService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package minimes.service;
+package minimes.production.service;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import minimes.dto.WorkOrderResponse;
-import minimes.repository.WorkOrderRepository;
+import minimes.production.dto.WorkOrderResponse;
+import minimes.production.repository.WorkOrderRepository;
 
 import lombok.RequiredArgsConstructor;
 

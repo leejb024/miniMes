@@ -1,9 +1,9 @@
-package minimes.dto;
+package minimes.production.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import minimes.domain.ProdResult;
+import minimes.production.domain.ProdResult;
 
 import lombok.Builder;
 import lombok.Getter;

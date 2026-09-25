@@ -1,4 +1,4 @@
-package minimes.dto;
+package minimes.production.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
