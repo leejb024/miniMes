@@ -1,4 +1,4 @@
-package com.example.demo.security;
+package minimes.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
