@@ -28,6 +28,36 @@ export const menus = [
       }
     ]
   },
+   {
+    id: 'purchase',
+    title: '구매',
+    children: [
+      {
+        id: 'purchase-management',
+        title: '구매관리',
+        children: [
+          { path: '/purchase/management/inbound', title: '입고등록' },
+          { path: '/purchase/management/return', title: '반품관리' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'inventory',
+    title: '재고',
+    children: [
+      {
+        id: 'inventory-management',
+        title: '재고관리',
+        children: [
+          { path: '/inventory/management/stock', title: '재고조회' },
+          { path: '/inventory/management/close', title: '재고 마감관리' },
+          { path: '/inventory/management/handover', title: '자재인계' },
+          { path: '/inventory/management/receive', title: '자재 인수' }
+        ]
+      }
+    ]
+  },
   {
     id: 'production',
     title: '생산',
