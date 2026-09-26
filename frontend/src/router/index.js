@@ -9,6 +9,12 @@ import PartnerView from '@/views/master/PartnerView.vue'
 import PlaceholderView from '@/views/PlaceholderView.vue'
 import ProcessView from '@/views/master/ProcessView.vue'
 import WarehouseView from '@/views/master/WarehouseView.vue'
+import PurchaseInboundView from '@/views/purchase/PurchaseInboundView.vue'
+import PurchaseReturnView from '@/views/purchase/PurchaseReturnView.vue'
+import MaterialHandoverView from '@/views/inventory/MaterialHandoverView.vue'
+import MaterialReceiveView from '@/views/inventory/MaterialReceiveView.vue'
+import StockCloseView from '@/views/inventory/StockCloseView.vue'
+import StockInquiryView from '@/views/inventory/StockInquiryView.vue'
 import WorkOrderView from '@/views/production/WorkOrderView.vue'
 import ProductionResultView from '@/views/production/ProductionResultView.vue'
 
@@ -18,8 +24,14 @@ const viewMap = {
   '/master/item/item': ItemView,
   '/master/process/process': ProcessView,
   '/master/process/bom': BomView,
+  '/purchase/management/inbound': PurchaseInboundView,
+  '/purchase/management/return': PurchaseReturnView,
+  '/inventory/management/stock': StockInquiryView,
+  '/inventory/management/close': StockCloseView,
+  '/inventory/management/handover': MaterialHandoverView,
+  '/inventory/management/receive': MaterialReceiveView,
   '/production/management/work-order': WorkOrderView,
-  '/production/management/result': ProductionResultView,
+  '/production/management/result': ProductionResultView
 }
 
 const children = leafMenus.map((item) => ({

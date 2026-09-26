@@ -8,7 +8,7 @@ export const menus = [
         title: '공통',
         children: [
           { path: '/master/common/partner', title: '거래처관리' },
-          { path: '/master/common/warehouse', title: '창고/위치 관리' }
+          { path: '/master/common/warehouse', title: '창고관리' }
         ]
       },
       {
@@ -28,7 +28,7 @@ export const menus = [
       }
     ]
   },
-   {
+  {
     id: 'purchase',
     title: '구매',
     children: [
