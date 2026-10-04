@@ -23,6 +23,7 @@ export const menus = [
         title: '공정',
         children: [
           { path: '/master/process/process', title: '공정관리' },
+          { path: '/master/process/equipment', title: '설비관리' },
           { path: '/master/process/bom', title: 'BOM 관리' }
         ]
       }

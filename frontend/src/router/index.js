@@ -4,6 +4,7 @@ import { defaultPath, leafMenus } from '@/layout/menus'
 import AppLayout from '@/layout/AppLayout.vue'
 import LoginView from '@/views/LoginView.vue'
 import BomView from '@/views/master/BomView.vue'
+import EquipmentView from '@/views/master/EquipmentView.vue'
 import ItemView from '@/views/master/ItemView.vue'
 import PartnerView from '@/views/master/PartnerView.vue'
 import PlaceholderView from '@/views/PlaceholderView.vue'
@@ -23,6 +24,7 @@ const viewMap = {
   '/master/common/warehouse': WarehouseView,
   '/master/item/item': ItemView,
   '/master/process/process': ProcessView,
+  '/master/process/equipment': EquipmentView,
   '/master/process/bom': BomView,
   '/purchase/management/inbound': PurchaseInboundView,
   '/purchase/management/return': PurchaseReturnView,
