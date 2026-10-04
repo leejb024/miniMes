@@ -45,10 +45,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        
-                        .requestMatchers("/", "/index.html", "/assets/**", "/*.ico", "/*.js", "/*.css").permitAll()
-                        
+						.requestMatchers(
+								"/swagger-ui.html",
+								"/swagger-ui/**",
+								"/v3/api-docs",
+								"/v3/api-docs/**")
+						.permitAll()
+						.requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

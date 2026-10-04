@@ -28,5 +28,18 @@ app:
   cors:
     allowed-origins: http://localhost:5173
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+    display-request-duration: true
+    persist-authorization: true
+    doc-expansion: none
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: false
+  packages-to-scan: minimes
+
 # 로그인 테이블: TB_USER
 # 초기 계정: admin / admin123
