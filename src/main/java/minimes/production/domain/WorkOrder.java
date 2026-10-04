@@ -10,8 +10,10 @@ import jakarta.persistence.Table;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "TB_WORK_ORDER")
@@ -26,6 +28,12 @@ public class WorkOrder {
 
 	@Column(name = "WORKCENTER_ID", length = 50)
 	private String workcenterId;
+
+	@Column(name = "PROCESS_ID", length = 50)
+	private String processId;
+
+	@Column(name = "EQUIP_ID", length = 50)
+	private String equipId;
 
 	@Column(name = "ITEM_ID", length = 50)
 	private String itemId;
@@ -50,4 +58,16 @@ public class WorkOrder {
 
 	@Column(name = "PLANT_ID", length = 50)
 	private String plantId;
+
+	@Column(name = "CLOSE_YN", length = 1)
+	private String closeYn;
+
+	@Column(name = "INPUT_COMMENT", length = 200)
+	private String inputComment;
+
+	@Column(name = "WORK_COMMENT", length = 200)
+	private String workComment;
+
+	@Column(name = "FINAL_LOT_NO", length = 50)
+	private String finalLotNo;
 }

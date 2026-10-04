@@ -13,11 +13,15 @@ public interface WorkOrderView {
 
 	String getWorkcenterName();
 
+	String getProcessId();
+
+	String getProcessName();
+
+	String getEquipId();
+
+	String getEquipName();
+
 	String getItemId();
-
-	String getDeptId();
-
-	String getDeptName();
 
 	String getState();
 
@@ -30,4 +34,6 @@ public interface WorkOrderView {
 	String getItemVersion();
 
 	String getBomVersion();
+
+	String getCloseYn();
 }

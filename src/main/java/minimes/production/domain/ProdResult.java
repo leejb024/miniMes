@@ -5,22 +5,25 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "TB_PROD_RESULT")
 public class ProdResult {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PROD_RESULT_SEQ")
 	private Long prodResultSeq;
 
@@ -45,9 +48,9 @@ public class ProdResult {
 	@Column(name = "PRODUCTION_NO", length = 50)
 	private String productionNo;
 
-	@Column(name = "WMS_PROD_QTY")
-	private BigDecimal wmsProdQty;
+	@Column(name = "IS_CONFIRMED", length = 1)
+	private String isConfirmed;
 
-	@Column(name = "WMS_CONFIRM_QTY")
-	private BigDecimal wmsConfirmQty;
+	@Column(name = "RESULT_TYPE", length = 20)
+	private String resultType;
 }
