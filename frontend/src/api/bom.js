@@ -12,3 +12,11 @@ export function fetchBomMaterials(itemId, bomVersion) {
     }
   })
 }
+
+export function createBom(payload) {
+  return http.post('/boms', payload)
+}
+
+export function updateBom(payload) {
+  return http.put('/boms', payload)
+}

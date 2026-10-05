@@ -23,6 +23,11 @@ public interface BomRepository extends JpaRepository<Bom, Long> {
 
 	List<Bom> findByItemIdAndBomVersionAndUseYn(String itemId, String bomVersion, String useYn);
 
+	List<Bom> findByItemIdAndBomVersionOrderByBomSeqAsc(String itemId, String bomVersion);
+
+	@Query("select coalesce(max(b.bomSeq), 0) from Bom b")
+	long findMaxBomSeq();
+
 	@Query("""
 			select a.materialId as materialId,
 			       a.itemId as itemId,
