@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import minimes.purchase.dto.PurchaseLotRequest;
 import minimes.purchase.dto.PurchaseLotResponse;
-import minimes.purchase.dto.PurchaseQtyRequest;
-import minimes.purchase.dto.PurchaseReturnRequest;
+import minimes.purchase.dto.PurchaseQtyRequest; 
 import minimes.purchase.dto.PurchaseScanRequest;
 import minimes.purchase.dto.PurchaseScanResponse;
 import minimes.purchase.service.PurchaseReceiveService;
@@ -60,17 +59,5 @@ public class PurchaseReceiveController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteQty(@RequestParam Long lotSeq) {
 		purchaseReceiveService.deleteQty(lotSeq);
-	}
-
-	@PostMapping("/returnLot")
-	@ResponseStatus(HttpStatus.CREATED)
-	public PurchaseLotResponse returnLot(@Valid @RequestBody PurchaseReturnRequest request) {
-		return purchaseReceiveService.returnLot(request);
-	}
-
-	@DeleteMapping("/delete/ReturnQty")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteReturnQty(@RequestParam Long lotSeq) {
-		purchaseReceiveService.deleteReturnQty(lotSeq);
 	}
 }

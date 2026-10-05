@@ -21,7 +21,6 @@ import minimes.purchase.domain.PurchaseScan;
 import minimes.purchase.dto.PurchaseLotRequest;
 import minimes.purchase.dto.PurchaseLotResponse;
 import minimes.purchase.dto.PurchaseQtyRequest;
-import minimes.purchase.dto.PurchaseReturnRequest;
 import minimes.purchase.dto.PurchaseScanRequest;
 import minimes.purchase.dto.PurchaseScanResponse;
 import minimes.purchase.repository.PurchaseLotRepository;
@@ -156,36 +155,6 @@ public class PurchaseReceiveService {
 		}
 		removeStock(lot);
 		purchaseLotRepository.delete(lot);
-	}
-
-	@Transactional
-	public PurchaseLotResponse returnLot(PurchaseReturnRequest request) {
-		PurchaseLot source = requireInbound(request.getLotSeq());
-		assertInboundOpen(source);
-		BigDecimal qty = requirePositive(request.getQty(), "반품 수량은 0보다 커야 합니다.");
-		BigDecimal remain = nullToZero(source.getQty()).subtract(returnedQty(source.getLotNo()));
-		if (qty.compareTo(remain) > 0) {
-			throw new IllegalArgumentException("반품 수량이 입고 잔량을 초과합니다.");
-		}
-
-		String lotNo = nextLotNo("R");
-		PurchaseLot returned = purchaseLotRepository.save(PurchaseLot.builder()
-				.lotNo(lotNo)
-				.lotType(PurchaseLot.TYPE_RETURN)
-				.poNo(source.getPoNo())
-				.poItemSeq(source.getPoItemSeq())
-				.itemId(source.getItemId())
-				.itemName(source.getItemName())
-				.unit(source.getUnit())
-				.qty(qty)
-				.warehouseId(source.getWarehouseId())
-				.warehouseName(source.getWarehouseName())
-				.barcode(source.getBarcode())
-				.sourceLotNo(source.getLotNo())
-				.remark(trimToNull(request.getRemark()))
-				.build());
-		applyStockDelta(source, qty.negate());
-		return toResponse(returned);
 	}
 
 	@Transactional

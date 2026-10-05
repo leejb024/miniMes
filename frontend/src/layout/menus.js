@@ -37,8 +37,7 @@ export const menus = [
         id: 'purchase-management',
         title: '구매관리',
         children: [
-          { path: '/purchase/management/inbound', title: '입고등록' },
-          { path: '/purchase/management/return', title: '반품관리' }
+          { path: '/purchase/management/inbound', title: '입고등록' }
         ]
       }
     ]
