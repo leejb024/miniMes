@@ -18,6 +18,7 @@ import StockCloseView from '@/views/inventory/StockCloseView.vue'
 import StockInquiryView from '@/views/inventory/StockInquiryView.vue'
 import WorkOrderView from '@/views/production/WorkOrderView.vue'
 import ProductionResultView from '@/views/production/ProductionResultView.vue'
+import WmsInboundExpectedView from '@/views/wms/WmsInboundExpectedView.vue'
 
 const viewMap = {
   '/master/common/partner': PartnerView,
@@ -33,7 +34,8 @@ const viewMap = {
   '/inventory/management/handover': MaterialHandoverView,
   '/inventory/management/receive': MaterialReceiveView,
   '/production/management/work-order': WorkOrderView,
-  '/production/management/result': ProductionResultView
+  '/production/management/result': ProductionResultView,
+  '/wms/inbound/expected': WmsInboundExpectedView
 }
 
 const children = leafMenus.map((item) => ({

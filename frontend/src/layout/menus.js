@@ -72,6 +72,19 @@ export const menus = [
         ]
       }
     ]
+  },
+  {
+    id: 'wms',
+    title: 'WMS 관리',
+    children: [
+      {
+        id: 'wms-inbound',
+        title: '입고관리',
+        children: [
+          { path: '/wms/inbound/expected', title: '입고예정' }
+        ]
+      }
+    ]
   }
 ]
 
