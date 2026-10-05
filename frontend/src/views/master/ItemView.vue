@@ -61,19 +61,20 @@
             <select v-model="form.kind" @change="onChangeKind">
               <option value="">선택하세요</option>
               <option value="RAW">원재료</option>
+              <option value="PRODUCT">제품</option>
             </select>
           </label>
           <label>
             ITEM_ID
-            <input :value="form.itemId" type="text" readonly placeholder="원재료 선택 시 자동 채번" />
+            <input :value="form.itemId" type="text" readonly placeholder="구분 선택 시 자동 채번" />
           </label>
           <label>
             ITEM_NAME
-            <input v-model.trim="form.itemName" type="text" :disabled="form.kind !== 'RAW'" />
+            <input v-model.trim="form.itemName" type="text" :disabled="!form.kind" />
           </label>
           <label>
             ITEM_TYPE
-            <input value="6" type="text" readonly />
+            <input :value="itemTypeLabel" type="text" readonly />
           </label>
         </div>
         <div class="modal-actions">
@@ -86,8 +87,8 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
-import { createRawItem, deleteItem, fetchItems, fetchNextRawItemId } from '@/api/item'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { createItem, deleteItem, fetchItems, fetchNextItemId } from '@/api/item'
 
 const items = ref([])
 const loading = ref(false)
@@ -101,6 +102,16 @@ const form = reactive({
   kind: '',
   itemId: '',
   itemName: ''
+})
+
+const itemTypeLabel = computed(() => {
+  if (form.kind === 'RAW') {
+    return '6'
+  }
+  if (form.kind === 'PRODUCT') {
+    return '2'
+  }
+  return ''
 })
 
 function formatDate(value) {
@@ -143,11 +154,11 @@ function closeForm() {
 async function onChangeKind() {
   formError.value = ''
   form.itemId = ''
-  if (form.kind !== 'RAW') {
+  if (form.kind !== 'RAW' && form.kind !== 'PRODUCT') {
     return
   }
   try {
-    const { data } = await fetchNextRawItemId()
+    const { data } = await fetchNextItemId(form.kind)
     form.itemId = data?.itemId || ''
   } catch (error) {
     formError.value = error.response?.data?.message || '품번 채번에 실패했습니다.'
@@ -155,8 +166,8 @@ async function onChangeKind() {
 }
 
 async function saveItem() {
-  if (form.kind !== 'RAW') {
-    formError.value = '원재료를 선택하세요.'
+  if (form.kind !== 'RAW' && form.kind !== 'PRODUCT') {
+    formError.value = '구분을 선택하세요.'
     return
   }
   if (!form.itemName) {
@@ -166,7 +177,7 @@ async function saveItem() {
   saving.value = true
   formError.value = ''
   try {
-    await createRawItem({ itemName: form.itemName })
+    await createItem({ itemName: form.itemName, kind: form.kind })
     showForm.value = false
     await loadItems()
   } catch (error) {

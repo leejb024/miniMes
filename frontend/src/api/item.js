@@ -4,11 +4,11 @@ export function fetchItems() {
   return http.get('/items')
 }
 
-export function fetchNextRawItemId() {
-  return http.get('/items/next-raw-id')
+export function fetchNextItemId(kind) {
+  return http.get('/items/next-id', { params: { kind } })
 }
 
-export function createRawItem(payload) {
+export function createItem(payload) {
   return http.post('/items', payload)
 }
 
