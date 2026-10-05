@@ -51,7 +51,6 @@ export const menus = [
         title: '재고관리',
         children: [
           { path: '/inventory/management/stock', title: '재고조회' },
-          { path: '/inventory/management/close', title: '재고 마감관리' },
           { path: '/inventory/management/handover', title: '자재인계' },
           { path: '/inventory/management/receive', title: '자재 인수' }
         ]

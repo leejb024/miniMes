@@ -13,11 +13,3 @@ export function fetchStockCarries(stockSeq) {
 export function carryStock(payload) {
   return http.post('/inventory/stock/carry', payload)
 }
-
-export function fetchStockCloses() {
-  return http.get('/inventory/stock/close')
-}
-
-export function closeStock(payload) {
-  return http.post('/inventory/stock/close', payload)
-}
