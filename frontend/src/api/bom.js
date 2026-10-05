@@ -1,7 +1,7 @@
 import http from './http'
 
-export function fetchBoms() {
-  return http.get('/boms')
+export function fetchBoms(params) {
+  return http.get('/boms', { params })
 }
 
 export function fetchBomMaterials(itemId, bomVersion) {

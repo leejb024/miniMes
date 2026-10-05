@@ -2,7 +2,17 @@
   <div class="page-card">
     <div class="page-header">
       <h1>BOM 관리</h1>
-      <button type="button" class="search-btn" :disabled="loading" @click="loadBoms">조회</button>
+      <div class="filter-bar">
+        <label>
+          품번
+          <input v-model.trim="itemId" type="text" @keyup.enter="loadBoms" />
+        </label>
+        <label>
+          품명
+          <input v-model.trim="itemName" type="text" @keyup.enter="loadBoms" />
+        </label>
+        <button type="button" class="search-btn" :disabled="loading" @click="loadBoms()">조회</button>
+      </div>
     </div>
 
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
@@ -93,14 +103,18 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { fetchBomMaterials, fetchBoms } from '@/api/bom'
+import { fetchItems } from '@/api/item'
 
 const boms = ref([])
 const materials = ref([])
+const items = ref([])
 const selectedBom = ref(null)
 const selectedKey = ref('')
 const loading = ref(false)
 const itemLoading = ref(false)
 const errorMessage = ref('')
+const itemId = ref('')
+const itemName = ref('')
 
 function headerKey(bom) {
   return [bom.itemId, bom.bomVersion].join('|')
@@ -113,20 +127,63 @@ function formatDate(value) {
   return String(value).replace('T', ' ').slice(0, 19)
 }
 
-async function loadBoms() {
+function isProductCode(value) {
+  return String(value || '').startsWith('2')
+}
+
+function matchesKeyword(value, keyword) {
+  const text = keyword.trim().toLowerCase()
+  if (!text) {
+    return true
+  }
+  return String(value || '').toLowerCase().includes(text)
+}
+
+async function loadItems() {
+  try {
+    const { data } = await fetchItems()
+    items.value = Array.isArray(data) ? data : []
+  } catch (error) {
+    items.value = []
+    errorMessage.value = error.response?.data?.message || '품목 조회에 실패했습니다.'
+  }
+}
+
+async function loadBoms(preserveKey = '') {
+  const key = typeof preserveKey === 'string' ? preserveKey : ''
   loading.value = true
   errorMessage.value = ''
   selectedBom.value = null
   selectedKey.value = ''
   materials.value = []
   try {
-    const { data } = await fetchBoms()
-    boms.value = Array.isArray(data) ? data : []
+    const { data } = await fetchBoms({
+      itemId: itemId.value,
+      itemName: itemName.value,
+      productsOnly: true
+    })
+    const rows = Array.isArray(data) ? data : [];
+ 
+    boms.value = rows.filter((bom) =>
+      isProductCode(bom.itemId)
+      && matchesKeyword(bom.itemId, itemId.value)
+      && matchesKeyword(bom.itemName, itemName.value)
+    )
+  
   } catch (error) {
     boms.value = []
     errorMessage.value = error.response?.data?.message || 'BOM 조회에 실패했습니다.'
   } finally {
     loading.value = false
+  }
+
+  if (!key) {
+    return
+  }
+  
+  const saved = boms.value.find((bom) => headerKey(bom) === key)
+  if (saved) {
+    await selectBom(saved)
   }
 }
 
@@ -146,5 +203,12 @@ async function selectBom(bom) {
   }
 }
 
-onMounted(loadBoms)
+onMounted(async () => {
+  await Promise.all([loadItems(), loadBoms()])
+})
 </script>
+<style scoped>
+.filter-bar input[type='text'] {
+  width: 160px;
+}
+</style>

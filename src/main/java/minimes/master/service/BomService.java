@@ -1,5 +1,4 @@
 package minimes.master.service;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import minimes.master.domain.Bom;
 import minimes.master.domain.Item;
@@ -26,9 +26,12 @@ public class BomService {
 	private final ItemRepository itemRepository;
 
 	@Transactional(readOnly = true)
-	public List<BomResponse> findHeaders() {
+	public List<BomResponse> findHeaders(String itemId, String itemName, boolean productsOnly) {
 		Map<String, String> itemNames = itemNames();
+		String itemIdKeyword = normalize(itemId);
+		String itemNameKeyword = normalize(itemName);
 		return bomRepository.findByUseYnOrderByItemIdAscBomVersionAscBomSeqAsc("Y").stream()
+				.filter(bom -> !productsOnly || isProductCode(bom.getItemId()))
 				.collect(Collectors.toMap(
 						this::headerKey,
 						Function.identity(),
@@ -36,6 +39,8 @@ public class BomService {
 						LinkedHashMap::new))
 				.values()
 				.stream()
+				.filter(bom -> contains(bom.getItemId(), itemIdKeyword))
+				.filter(bom -> contains(itemNames.get(bom.getItemId()), itemNameKeyword))
 				.map(bom -> BomResponse.fromHeader(bom, itemNames.get(bom.getItemId())))
 				.toList();
 	}
@@ -45,6 +50,21 @@ public class BomService {
 		return bomRepository.findMaterials(itemId, bomVersion).stream()
 				.map(BomItemResponse::from)
 				.toList();
+	}
+
+	private boolean isProductCode(String itemId) {
+		return itemId != null && itemId.startsWith("2");
+	}
+
+	private String normalize(String value) {
+		return StringUtils.hasText(value) ? value.trim().toLowerCase() : "";
+	}
+
+	private boolean contains(String value, String keyword) {
+		if (!StringUtils.hasText(keyword)) {
+			return true;
+		}
+		return value != null && value.toLowerCase().contains(keyword);
 	}
 
 	private String headerKey(Bom bom) {

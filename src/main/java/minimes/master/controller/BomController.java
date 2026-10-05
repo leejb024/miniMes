@@ -21,8 +21,11 @@ public class BomController {
 	private final BomService bomService;
 
 	@GetMapping
-	public List<BomResponse> list() {
-		return bomService.findHeaders();
+	public List<BomResponse> list(
+			@RequestParam(required = false) String itemId,
+			@RequestParam(required = false) String itemName,
+			@RequestParam(defaultValue = "false") boolean productsOnly) {
+		return bomService.findHeaders(itemId, itemName, productsOnly);
 	}
 
 	@GetMapping("/materials")
