@@ -4,7 +4,8 @@
       <h1>창고관리</h1>
       <div class="section-actions">
         <button type="button" class="search-btn" @click="openCreate">등록</button>
-        <button type="button" class="search-btn" :disabled="loading" @click="loadWarehouses">조회</button>
+        <button type="button" class="ghost-btn" :disabled="!selectedWarehouseId" @click="openEdit">수정</button>
+        <button type="button" class="search-btn" :disabled="loading" @click="loadWarehouses()">조회</button>
       </div>
     </div>
 
@@ -27,7 +28,13 @@
           <tr v-else-if="warehouses.length === 0">
             <td colspan="4" class="empty">조회된 창고가 없습니다.</td>
           </tr>
-          <tr v-for="warehouse in warehouses" v-else :key="warehouse.warehouseId">
+          <tr
+            v-for="warehouse in warehouses"
+            v-else
+            :key="warehouse.warehouseId"
+            :class="{ selected: selectedWarehouseId === warehouse.warehouseId, clickable: true }"
+            @click="selectedWarehouseId = warehouse.warehouseId"
+          >
             <td>{{ warehouse.warehouseId }}</td>
             <td>{{ warehouse.warehouseName }}</td>
             <td>{{ warehouse.warehouseType }}</td>
@@ -40,14 +47,14 @@
     <div v-if="showForm" class="modal-mask" @click.self="closeForm">
       <div class="modal-card">
         <div class="modal-head">
-          <h2>창고 등록</h2>
+          <h2>{{ isEdit ? '창고 수정' : '창고 등록' }}</h2>
           <button type="button" class="ghost-btn" @click="closeForm">닫기</button>
         </div>
         <p v-if="formError" class="error">{{ formError }}</p>
         <div class="form-grid">
           <label>
             창고ID
-            <input v-model.trim="form.warehouseId" type="text" />
+            <input v-model.trim="form.warehouseId" type="text" :readonly="isEdit" />
           </label>
           <label>
             창고명
@@ -76,14 +83,16 @@
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
-import { createWarehouse, fetchWarehouses } from '@/api/warehouse'
+import { createWarehouse, fetchWarehouses, updateWarehouse } from '@/api/warehouse'
 
 const warehouses = ref([])
+const selectedWarehouseId = ref('')
 const loading = ref(false)
 const saving = ref(false)
 const errorMessage = ref('')
 const formError = ref('')
 const showForm = ref(false)
+const isEdit = ref(false)
 const form = reactive(emptyForm())
 
 function emptyForm() {
@@ -95,14 +104,21 @@ function emptyForm() {
   }
 }
 
-async function loadWarehouses() {
+async function loadWarehouses(preserveId = '') {
+  const warehouseId = typeof preserveId === 'string' ? preserveId : ''
   loading.value = true
   errorMessage.value = ''
   try {
     const { data } = await fetchWarehouses()
     warehouses.value = Array.isArray(data) ? data : []
+    if (warehouseId && warehouses.value.some((row) => row.warehouseId === warehouseId)) {
+      selectedWarehouseId.value = warehouseId
+    } else if (!warehouses.value.some((row) => row.warehouseId === selectedWarehouseId.value)) {
+      selectedWarehouseId.value = ''
+    }
   } catch (error) {
     warehouses.value = []
+    selectedWarehouseId.value = ''
     errorMessage.value = error.response?.data?.message || '창고 조회에 실패했습니다.'
   } finally {
     loading.value = false
@@ -110,7 +126,22 @@ async function loadWarehouses() {
 }
 
 function openCreate() {
+  isEdit.value = false
   Object.assign(form, emptyForm())
+  formError.value = ''
+  showForm.value = true
+}
+
+function openEdit() {
+  const warehouse = warehouses.value.find((row) => row.warehouseId === selectedWarehouseId.value)
+  if (!warehouse) {
+    return
+  }
+  isEdit.value = true
+  form.warehouseId = warehouse.warehouseId || ''
+  form.warehouseName = warehouse.warehouseName || ''
+  form.warehouseType = warehouse.warehouseType || ''
+  form.useYn = warehouse.useYn === 'N' ? 'N' : 'Y'
   formError.value = ''
   showForm.value = true
 }
@@ -126,21 +157,28 @@ async function saveForm() {
   }
   saving.value = true
   formError.value = ''
+  const payload = {
+    warehouseId: form.warehouseId,
+    warehouseName: form.warehouseName,
+    warehouseType: form.warehouseType || null,
+    useYn: form.useYn
+  }
   try {
-    await createWarehouse({
-      warehouseId: form.warehouseId,
-      warehouseName: form.warehouseName,
-      warehouseType: form.warehouseType || null,
-      useYn: form.useYn
-    })
+    if (isEdit.value) {
+      await updateWarehouse(payload)
+    } else {
+      await createWarehouse(payload)
+    }
     showForm.value = false
-    await loadWarehouses()
+    await loadWarehouses(form.warehouseId)
   } catch (error) {
-    formError.value = error.response?.data?.message || '창고 등록에 실패했습니다.'
+    formError.value = error.response?.data?.message || '창고 저장에 실패했습니다.'
   } finally {
     saving.value = false
   }
 }
 
-onMounted(loadWarehouses)
+onMounted(() => {
+  loadWarehouses()
+})
 </script>

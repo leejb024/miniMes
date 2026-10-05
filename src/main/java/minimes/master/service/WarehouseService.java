@@ -39,12 +39,38 @@ public class WarehouseService {
 		}
 		Warehouse warehouse = new Warehouse();
 		warehouse.setWarehouseId(warehouseId);
-		warehouse.setWarehouseName(request.getWarehouseName().trim());
-		warehouse.setWarehouseType(trimToNull(request.getWarehouseType()));
-		warehouse.setUseYn(StringUtils.hasText(request.getUseYn()) ? request.getUseYn().trim() : "Y");
+		apply(warehouse, request);
 		warehouse.setCreId(StringUtils.hasText(creId) ? creId : "admin");
 		warehouse.setCreDt(LocalDateTime.now());
 		return WarehouseResponse.from(warehouseRepository.save(warehouse));
+	}
+
+	@Transactional
+	public WarehouseResponse update(WarehouseCreateRequest request, String modId) {
+		String warehouseId = request.getWarehouseId().trim();
+		Warehouse warehouse = warehouseRepository.findById(warehouseId)
+				.orElseThrow(() -> new IllegalArgumentException("수정할 창고가 없습니다."));
+		apply(warehouse, request);
+		warehouse.setModId(StringUtils.hasText(modId) ? modId : "admin");
+		warehouse.setModDt(LocalDateTime.now());
+		return WarehouseResponse.from(warehouse);
+	}
+
+	private void apply(Warehouse warehouse, WarehouseCreateRequest request) {
+		warehouse.setWarehouseName(request.getWarehouseName().trim());
+		warehouse.setWarehouseType(trimToNull(request.getWarehouseType()));
+		warehouse.setUseYn(normalizeUseYn(request.getUseYn()));
+	}
+
+	private String normalizeUseYn(String useYn) {
+		if (!StringUtils.hasText(useYn)) {
+			return "Y";
+		}
+		String normalized = useYn.trim().toUpperCase();
+		if (!"Y".equals(normalized) && !"N".equals(normalized)) {
+			throw new IllegalArgumentException("사용여부는 Y 또는 N입니다.");
+		}
+		return normalized;
 	}
 
 	private String trimToNull(String value) {

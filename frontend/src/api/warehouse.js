@@ -7,3 +7,7 @@ export function fetchWarehouses() {
 export function createWarehouse(payload) {
   return http.post('/warehouses', payload)
 }
+
+export function updateWarehouse(payload) {
+  return http.put('/warehouses', payload)
+}
