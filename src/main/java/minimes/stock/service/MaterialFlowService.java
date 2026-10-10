@@ -63,9 +63,13 @@ public class MaterialFlowService {
 		assertPeriodOpen();
 		BigDecimal qty = requirePositive(request.getQty(), "요청 수량은 0보다 커야 합니다.");
 		StockResponse stock = findInboundStock(request.getStockSeq());
-		if (qty.compareTo(nullToZero(stock.getQty())) > 0) {
-			throw new IllegalArgumentException("요청 수량이 재고 수량을 초과합니다.");
-		}
+        BigDecimal available = nullToZero(stock.getQty()).subtract(reservedQty(stock, null));
+        if (available.signum() < 0) {
+            available = BigDecimal.ZERO;
+        }
+        if (qty.compareTo(available) > 0) {
+            throw new IllegalArgumentException("요청 수량이 재고 수량을 초과합니다.");
+        }
 		Warehouse toWarehouse = requireWarehouse(request.getToWarehouseId());
 		if (toWarehouse.getWarehouseId().equals(stock.getWarehouseId())) {
 			throw new IllegalArgumentException("출고 창고와 입고 창고는 달라야 합니다.");
@@ -289,6 +293,35 @@ public class MaterialFlowService {
 		return materialOrderRepository.findByOrderNo(orderNo.trim())
 				.orElseThrow(() -> new IllegalArgumentException("불출 요청을 찾을 수 없습니다."));
 	}
+
+    private BigDecimal reservedQty(StockResponse stock, String excludeOrderNo) {
+        BigDecimal reserved = BigDecimal.ZERO;
+        for (MaterialOrder order : materialOrderRepository.findAll()) {
+            if (excludeOrderNo != null && excludeOrderNo.equals(order.getOrderNo())) {
+                continue;
+            }
+            if (!holdsStock(order.getStatus())) {
+                continue;
+            }
+            boolean sameSeq = stock.getStockSeq() != null && stock.getStockSeq().equals(order.getStockSeq());
+            boolean sameLot = stock.getWarehouseId() != null && stock.getWarehouseId().equals(order.getFromWarehouseId())
+                    && stock.getItemId() != null && stock.getItemId().equals(order.getItemId())
+                    && stock.getLotNo() != null && stock.getLotNo().equals(order.getLotNo());
+            if (sameSeq || sameLot) {
+                reserved = reserved.add(nullToZero(order.getQty()));
+            }
+        }
+        return reserved;
+    }
+
+    private boolean holdsStock(String status) {
+        return MaterialOrder.REQUEST.equals(status)
+                || MaterialOrder.MOVE_REQUEST.equals(status)
+                || MaterialOrder.MOVING.equals(status)
+                || MaterialOrder.MOVE_INFO.equals(status)
+                || MaterialOrder.IN_MOVE.equals(status)
+                || MaterialOrder.DISPATCHED.equals(status);
+    }
 
 	private StockResponse findInboundStock(Long stockSeq) {
 		for (StockResponse stock : stockService.findAll()) {

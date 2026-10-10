@@ -125,7 +125,7 @@
           </label>
           <label>
             요청 수량
-            <input v-model="form.qty" type="number" min="0" step="0.0001" />
+            <input v-model="form.qty" type="number" min="0" step="0.0001" :max="selectedStock ? selectedStock.qty : undefined" />
           </label>
           <label>
             비고
@@ -193,6 +193,8 @@ const showPick = ref(false)
 const form = reactive(emptyForm())
 
 const selectedOrder = computed(() => orders.value.find((order) => order.orderNo === selectedNo.value) || null)
+const selectedStock = computed(() => stocks.value.find((stock) => String(stock.stockSeq) === String(form.stockSeq)) || null)
+const holdingStatuses = new Set(['REQUEST', 'MOVE_REQUEST', 'MOVING', 'MOVE_INFO', 'IN_MOVE', 'DISPATCHED'])
 
 function emptyForm() {
   return { stockSeq: '', toWarehouseId: '', qty: '', remark: '', approvedYn: 'Y', pickNo: '' }
@@ -257,15 +259,60 @@ async function loadOrders() {
   }
 }
 
+function reservedQty(stock, orderRows) {
+  return orderRows.reduce((sum, order) => {
+    if (!holdingStatuses.has(order.status)) {
+      return sum
+    }
+    const sameSeq = order.stockSeq != null && String(order.stockSeq) === String(stock.stockSeq)
+    const sameLot = order.fromWarehouseId === stock.warehouseId
+      && order.itemId === stock.itemId
+      && order.lotNo === stock.lotNo
+    if (!sameSeq && !sameLot) {
+      return sum
+    }
+    return sum + Number(order.qty || 0)
+  }, 0)
+}
+
+function availableStocks(stockRows, orderRows) {
+  return stockRows.flatMap((stock) => {
+    const qty = Number(stock.qty || 0) - reservedQty(stock, orderRows)
+    if (!(qty > 0)) {
+      return []
+    }
+    return [{ ...stock, qty }]
+  })
+}
+
 async function openCreate() {
   Object.assign(form, emptyForm())
   formError.value = ''
   showCreate.value = true
   try {
-    const [stockResult, warehouseResult] = await Promise.all([fetchStocks(), fetchWarehouses()])
-    stocks.value = Array.isArray(stockResult.data) ? stockResult.data : []
-    warehouses.value = (Array.isArray(warehouseResult.data) ? warehouseResult.data : [])
-      .filter((warehouse) => !warehouse.useYn || String(warehouse.useYn).toUpperCase() === 'Y')
+    const [stockResult, warehouseResult, orderResult] = await Promise.all([
+      fetchStocks(),
+      fetchWarehouses(),
+      fetchMaterialOrders()
+    ])
+    const orderRows = Array.isArray(orderResult.data) ? orderResult.data : []
+    stocks.value = availableStocks(Array.isArray(stockResult.data) ? stockResult.data : [], orderRows)
+
+
+    const rawData = Array.isArray(warehouseResult.data) ? warehouseResult.data : [];
+    const tempWarehouses = [];
+
+    for (const warehouse of rawData) {
+      const isValidUseYn = !warehouse.useYn || String(warehouse.useYn).toUpperCase() === 'Y';
+
+      const isNotMat = warehouse.warehouseType !== 'MAT';
+
+      if (isValidUseYn && isNotMat) {
+        tempWarehouses.push(warehouse);
+      }
+    }
+
+    warehouses.value = tempWarehouses;
   } catch (error) {
     formError.value = error.response?.data?.message || '기준정보 조회에 실패했습니다.'
   }
@@ -274,6 +321,10 @@ async function openCreate() {
 async function saveCreate() {
   if (!form.stockSeq || !form.toWarehouseId || !form.qty || Number(form.qty) <= 0) {
     formError.value = '재고, 입고 창고, 요청 수량을 입력하세요.'
+    return
+  }
+  if (selectedStock.value && Number(form.qty) > Number(selectedStock.value.qty)) {
+    formError.value = `요청 수량이 남은 재고를 초과합니다. 남은 재고는 ${formatQty(selectedStock.value.qty)}입니다.`
     return
   }
   acting.value = true
