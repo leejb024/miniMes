@@ -261,9 +261,9 @@ public static final String STATE_START = "시작";
 			throw new IllegalArgumentException("사용할 수 없는 공정입니다.");
 		}
 		String name = process.getProcessName() == null ? "" : process.getProcessName();
-		if (!name.contains("배합")) {
-			throw new IllegalArgumentException("배합 공정을 선택하세요.");
-		}
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("공정을 선택하세요.");
+        }
 		return process;
 	}
 

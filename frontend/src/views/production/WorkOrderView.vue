@@ -188,7 +188,7 @@ const form = reactive(emptyForm())
 const itemOptions = computed(() => items.value.filter((item) => isUsable(item.useYn) && String(item.itemId || '').startsWith('2')))
 const processOptions = computed(() => processes.value.filter((process) => {
   if (!isUsable(process.useYn)) return false
-  return (process.processName || '').includes('배합')
+  return (process.processName || '')
 }))
 const equipmentOptions = computed(() => {
   const mixProcessIds = new Set(processOptions.value.map((process) => process.processId))
