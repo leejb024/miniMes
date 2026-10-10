@@ -194,12 +194,13 @@
         <p v-if="formError" class="error">{{ formError }}</p>
         <div class="form-grid">
           <label>
-            바코드
+            자재ID
+            <!-- 1010 -->
             <input
               ref="barcodeInput"
               v-model.trim="barcode"
               type="text"
-              placeholder="발주번호, 자재ID, 발주번호|자재ID"
+              placeholder="자재ID"
               @keyup.enter="saveScan"
             />
           </label>
@@ -474,8 +475,13 @@ function closeQtyForm() {
 }
 
 async function saveScan() {
+  // 1010 스캔 값은 자재ID만 받는다.
   if (!barcode.value) {
-    formError.value = '바코드를 입력하세요.'
+    formError.value = '자재ID를 입력하세요.'
+    return
+  }
+  if (barcode.value.includes('|') || barcode.value.includes(',')) {
+    formError.value = '자재ID만 입력하세요.'
     return
   }
   saving.value = true
@@ -578,9 +584,14 @@ async function onDeleteQty() {
 async function loadWarehouses() {
   try {
     const { data } = await fetchWarehouses()
-    warehouses.value = (Array.isArray(data) ? data : []).filter(
-      (warehouse) => !warehouse.useYn || String(warehouse.useYn).toUpperCase() === 'Y'
-    )
+    warehouses.value = (Array.isArray(data) ? data : []).filter((warehouse) => {
+      if (warehouse.useYn && String(warehouse.useYn).toUpperCase() !== 'Y') {
+        return false
+      }
+      const type = String(warehouse.warehouseType || '')
+      const name = String(warehouse.warehouseName || '')
+      return type.includes('MAT') || name.includes('MAT')
+    })
   } catch (error) {
     warehouses.value = []
     errorMessage.value = error.response?.data?.message || '창고 조회에 실패했습니다.'

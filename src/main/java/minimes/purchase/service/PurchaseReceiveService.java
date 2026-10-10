@@ -247,20 +247,16 @@ public class PurchaseReceiveService {
 		return matches.get(0);
 	}
 
-	private PurchaseOrderItem resolveScanItem(String barcode, String requestedPoNo) {
-		String selectedPoNo = trimToNull(requestedPoNo);
-		int separator = indexOfSeparator(barcode);
-		if (separator > 0 && separator < barcode.length() - 1) {
-			return findOrderItem(barcode.substring(0, separator).trim(), barcode.substring(separator + 1).trim());
-		}
-		if (purchaseOrderRepository.existsById(barcode)) {
-			if (selectedPoNo != null && !selectedPoNo.equals(barcode)) {
-				throw new IllegalArgumentException("선택한 발주와 바코드의 발주번호가 다릅니다.");
-			}
-			return onlyOrderItem(barcode);
-		}
-		return findOrderItem(selectedPoNo, barcode);
-	}
+    private PurchaseOrderItem resolveScanItem(String barcode, String requestedPoNo) {
+        String selectedPoNo = trimToNull(requestedPoNo);
+        if (selectedPoNo == null) {
+            throw new IllegalArgumentException("발주를 선택하세요.");
+        }
+        if (barcode.indexOf('|') >= 0 || barcode.indexOf(',') >= 0) {
+            throw new IllegalArgumentException("자재ID만 입력하세요.");
+        }
+        return findOrderItem(selectedPoNo, barcode);
+    }
 
 	private PurchaseOrderItem onlyOrderItem(String poNo) {
 		List<PurchaseOrderItem> items = purchaseOrderItemRepository.findByPoNoOrderByPoItemSeqAsc(poNo);
